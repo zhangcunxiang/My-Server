@@ -35,14 +35,28 @@ process_local_iq(_From, _To,
       set ->
 	  	  IQ#iq{type = error, sub_el = [SubEl, ?ERR_NOT_ALLOWED]};
       get ->
-		  IQ#iq{type = result,
-			sub_el =
-			    [#xmlel{name = <<"query">>,
-				    attrs = [{<<"xmlns">>, ?NS_SEARCH}],
-				    children =
-					[#xmlel{name = <<"tzo">>, attrs = [],
-						children = [{xmlcdata, <<"search is useable!">>}]}
-					]}]}
+		  Accounts = xml:get_subtag_cdata(SubEl,<<"account">>),
+		  Server = _From#jid.lserver,
+		  case ejabberd_auth:is_user_exists(Accounts, Server) of
+			  true ->
+				  IQ#iq{type = result,
+					sub_el =
+					    [#xmlel{name = <<"query">>,
+						    attrs = [{<<"xmlns">>, ?NS_SEARCH}],
+						    children =
+							[#xmlel{name = <<"result">>, attrs = [],
+								children = [{xmlcdata, <<"exist">>}]}
+							]}]};
+			  false ->
+				  IQ#iq{type = result,
+					sub_el =
+					    [#xmlel{name = <<"query">>,
+						    attrs = [{<<"xmlns">>, ?NS_SEARCH}],
+						    children =
+							[#xmlel{name = <<"result">>, attrs = [],
+								children = [{xmlcdata, <<"non_exist">>}]}
+							]}]}
+		  end
 	end.
 
 
