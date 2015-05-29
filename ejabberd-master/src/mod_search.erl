@@ -41,7 +41,7 @@ process_local_iq(_From, _To,
 				    attrs = [{<<"xmlns">>, ?NS_SEARCH}],
 				    children =
 					[#xmlel{name = <<"tzo">>, attrs = [],
-						children = [{xmlcdata, TZO_diff}]}
+						children = [{xmlcdata, <<"search is useable!">>}]}
 					]}]}
 	end.
 
