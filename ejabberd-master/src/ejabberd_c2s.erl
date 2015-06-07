@@ -1299,6 +1299,7 @@ session_established2(El, StateData) ->
 						     FromJID, ToJID, NewEl)
 			   end;
 		       <<"message">> ->
+			   send_server_get_receipt(FromJID,ToJID,NewEl),
 			   ejabberd_hooks:run(user_send_packet, Server,
 					      [FromJID, ToJID, NewEl]),
 			   check_privacy_route(FromJID, NewStateData, FromJID,
@@ -1309,6 +1310,29 @@ session_established2(El, StateData) ->
     ejabberd_hooks:run(c2s_loop_debug,
 		       [{xmlstreamelement, El}]),
     fsm_next_state(session_established, NewState).
+
+
+%% changed --zhangcunxiang
+send_server_get_receipt(FromJID,ToJID,Packet) ->
+	Type = xml:get_tag_attr_s(<<"type">>,Packet),
+	if Type == <<"chat">> ->
+		   SubEl = Packet#xmlel.children,
+		   Attrs = Packet#xmlel.attrs,
+		   SubTag = xml:get_subtag_with_xmlns(Packet,<<"received">>,?NS_RECEIPTS),
+		   if(SubTag == false) ->
+				 ID = xml:get_tag_attr_s(<<"id">>,Packet),
+				 NewPacket = #xmlel{name= <<"message">>,attrs =[{<<"type">>,<<"chat">>}],children=
+									   [#xmlel{name= <<"server_received">>,
+								    		   attrs=[{<<"xmlns">>,?NS_RECEIPTS}],
+								   			   children=[{xmlcdata,ID}] }]},
+				 ejabberd_router:route(ToJID,FromJID,NewPacket);
+			 true ->
+				ok
+		   end;
+	   true ->  
+		   ok
+	end.
+
 
 wait_for_resume({xmlstreamelement, _El} = Event, StateData) ->
     session_established(Event, StateData),
