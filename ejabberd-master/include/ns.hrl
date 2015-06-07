@@ -28,6 +28,7 @@
 -define(NS_AUTH_ERROR, <<"jabber:iq:auth:error">>).
 -define(NS_REGISTER, <<"jabber:iq:register">>).
 -define(NS_SEARCH, <<"jabber:iq:search">>).
+-define(NS_RECEIPTS,<<"urn:xmpp:receipts">>).
 -define(NS_ROSTER, <<"jabber:iq:roster">>).
 -define(NS_ROSTER_VER,
 	<<"urn:xmpp:features:rosterver">>).
