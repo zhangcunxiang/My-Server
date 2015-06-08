@@ -29,7 +29,7 @@
 
 -export([get_db_type/0, update/5, update_t/4, sql_transaction/2,
 	 get_last/2, set_last_t/4, del_last/2,
-         get_password/2, get_password_scram/2,
+         get_password/2,get_attention/2, get_password_scram/2,
 	 set_password_t/3, set_password_scram_t/6,
 	 add_user/3, add_user_scram/6, del_user/2,
 	 del_user_return_password/3, list_users/1, list_users/2,
@@ -52,6 +52,7 @@
 	 unset_default_privacy_list/2,
 	 remove_privacy_list/2,
 	 add_privacy_list/2,
+	 add_attention_list/3,
 	 set_privacy_list/2,
 	 del_privacy_lists/3,
 	 set_vcard/26,
@@ -130,6 +131,8 @@ update(LServer, Table, Fields, Vals, Where) ->
 			_ -> Res
 		end		   
     end.
+
+
 
 %% F can be either a fun or a list of queries
 %% TODO: We should probably move the list of queries transaction
@@ -523,6 +526,12 @@ get_vcard(LServer, Username) ->
 			    [<<"select vcard from vcard where username='">>,
 			     Username, <<"';">>]).
 
+get_attention(LServer,Username)->
+	ejabberd_odbc:sql_query(LServer, 
+							[<<"select jid from attention where username='">>,
+							 Username,<<"';">>]).
+	
+
 get_default_privacy_list(LServer, Username) ->
     ejabberd_odbc:sql_query(LServer,
 			    [<<"select name from privacy_default_list "
@@ -607,6 +616,15 @@ add_privacy_list(Username, SName) ->
     ejabberd_odbc:sql_query_t([<<"insert into privacy_list(username, name) "
 				 "values ('">>,
 			       Username, <<"', '">>, SName, <<"');">>]).
+
+add_attention_list(Username,SJid,LServer) ->
+	ejabberd_odbc:sql_query(LServer,[<<"insert into attention(username,jid) "
+				 "values ('">>,Username,<<"', '">>,SJid,<<"');">>]).
+
+
+remove_attention_list(Username,SJid) ->
+	ejabberd_odbc:sql_query_t([<<"delete from attention where username='">>,
+							   Username,<<"' and jid= '">>,SJid,<<"';">>]).
 
 set_privacy_list(ID, RItems) ->
     ejabberd_odbc:sql_query_t([<<"delete from privacy_list_data where "
@@ -946,6 +964,10 @@ remove_privacy_list(Username, SName) ->
 add_privacy_list(Username, SName) ->
     ejabberd_odbc:sql_query_t([<<"EXECUTE dbo.add_privacy_list '">>,
 			       Username, <<"' , '">>, SName, <<"'">>]).
+
+add_attention_list(Username,Jid,_Server) ->
+	ejabberd_odbc:sql_query_t([<<"EXECUTE dbc.add_attention_list '">>,
+							   Username,<<"' , '">>,Jid,<<"'">>]).
 
 set_privacy_list(ID, RItems) ->
     ejabberd_odbc:sql_query_t([<<"EXECUTE dbo.del_privacy_list_by_id '">>,

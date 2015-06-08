@@ -664,6 +664,9 @@ modules:
   mod_vcard_xupdate: 
     db_type: odbc
   mod_version: {}
+  mod_search: {}
+  mod_attention: 
+    db_type: odbc
   
 
 ##
