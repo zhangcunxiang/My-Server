@@ -52,6 +52,7 @@
 	 unset_default_privacy_list/2,
 	 remove_privacy_list/2,
 	 add_privacy_list/2,
+	 remove_attention_list/3,
 	 add_attention_list/3,
 	 set_privacy_list/2,
 	 del_privacy_lists/3,
@@ -622,8 +623,8 @@ add_attention_list(Username,SJid,LServer) ->
 				 "values ('">>,Username,<<"', '">>,SJid,<<"');">>]).
 
 
-remove_attention_list(Username,SJid) ->
-	ejabberd_odbc:sql_query_t([<<"delete from attention where username='">>,
+remove_attention_list(Username,SJid,LServer) ->
+	ejabberd_odbc:sql_query(LServer,[<<"delete from attention where username='">>,
 							   Username,<<"' and jid= '">>,SJid,<<"';">>]).
 
 set_privacy_list(ID, RItems) ->

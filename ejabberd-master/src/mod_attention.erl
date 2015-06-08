@@ -45,15 +45,26 @@ process_local_iq(_From, _To,
 				   SubscribedUser = Rs#jid.luser,
 				   Subscriber = _From#jid.luser,
 				   Server = _From#jid.lserver,
-				   case ejabberd_auth:is_user_exists(SubscribedUser,Server) of
-					   false -> IQ#iq{type = error, sub_el = [SubEl, ?ERR_NOT_ALLOWED]};
-					   true -> 
-						   case ejabberd_auth:is_user_exists(Subscriber,Server) of
-							   false -> IQ#iq{type = error, sub_el = [SubEl, ?ERR_NOT_ALLOWED]};
-							   true ->
-								   set_attention(Subscriber,Subscribed,Server),
-								   IQ#iq{type = result, sub_el = []}
-						   end
+				   if SubscribeType == <<"add">> ->
+					   case ejabberd_auth:is_user_exists(SubscribedUser,Server) of
+						   false -> IQ#iq{type = error, sub_el = [SubEl, ?ERR_NOT_ALLOWED]};
+						   true -> 
+							   case ejabberd_auth:is_user_exists(Subscriber,Server) of
+								   false -> IQ#iq{type = error, sub_el = [SubEl, ?ERR_NOT_ALLOWED]};
+								   true ->
+									   set_attention(Subscriber,Subscribed,Server),
+									   IQ#iq{type = result, sub_el = []}
+							   end
+					   end;
+				     SubscribeType == <<"remove">> ->
+						case ejabberd_auth:is_user_exists(Subscriber,Server) of
+						   false -> IQ#iq{type = error, sub_el = [SubEl, ?ERR_NOT_ALLOWED]};
+						   true ->
+							   remove_attention(Subscriber,Subscribed,Server),
+							   IQ#iq{type = result, sub_el = []}
+					    end;
+				    true ->
+						IQ#iq{type = error, sub_el = [SubEl, ?ERR_NOT_ALLOWED]}
 				   end
 		  end;
       get ->
@@ -79,6 +90,9 @@ get_attention(User,Server) ->
 set_attention(User,Subscribed,Server) ->
 	set_attention(User,Server,Subscribed,gen_mod:db_type(Server, ?MODULE)).
 
+remove_attention(User,Subscribed,Server) ->
+	remove_attention(User,Server,Subscribed,gen_mod:db_type(Server, ?MODULE)).
+
 
 get_attention(User,Server,mnesia) ->
 	ok;
@@ -96,6 +110,13 @@ set_attention(User,Server,Subscribed,odbc) ->
 	SubscribedJid = ejabberd_odbc:escape(Subscribed),
 	sql_set_attention(Server,Subscriber,SubscribedJid).
 
+remove_attention(User,Server,Subscribed,mensia) ->
+	ok;
+remove_attention(User,Server,Subscribed,odbc) ->
+	Subscriber = ejabberd_odbc:escape(User),
+	Server = ejabberd_odbc:escape(Server),
+	SubscribedJid = ejabberd_odbc:escape(Subscribed),
+	sql_remove_attention(Server,Subscriber,SubscribedJid).
 
 sql_get_attention(LServer,LUser)->
 	case catch odbc_queries:get_attention(LServer, LUser) 
@@ -111,9 +132,12 @@ sql_get_attention(LServer,LUser)->
 	end.
 
 	
-sql_set_attention(Server,Subscriber,SubscriberdJid) ->
-	odbc_queries:add_attention_list(Subscriber,SubscriberdJid,Server).
+sql_set_attention(Server,Subscriber,SubscribedJid) ->
+	odbc_queries:add_attention_list(Subscriber,SubscribedJid,Server).
 		
+
+sql_remove_attention(Server,Subscriber,SubscriberdJid) ->
+	odbc_queries:remove_attention_list(Subscriber, SubscriberdJid, Server).
 
 
 
