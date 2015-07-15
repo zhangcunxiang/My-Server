@@ -32,7 +32,7 @@
 -behaviour(gen_mod).
 
 -export([start/2, stop/1, stream_feature_register/2,
-	 unauthenticated_iq_register/4, try_register/5,
+	 unauthenticated_iq_register/4, try_register/6,
 	 process_iq/3, send_registration_notifications/3,
          transform_options/1, transform_module_options/1]).
 
@@ -331,7 +331,7 @@ try_register_or_set_password(User, Server, Password,
       _ when CaptchaSucceed ->
 	  case check_from(From, Server) of
 	    allow ->
-		case try_register(User, Server, Password, Source, Lang)
+		case try_register(User, Server, Password, Source, Lang,SubEl)
 		    of
 		  ok -> IQ#iq{type = result, sub_el = []};
 		  {error, Error} ->
@@ -369,7 +369,7 @@ try_set_password(User, Server, Password, IQ, SubEl,
 		sub_el = [SubEl, ?ERRT_NOT_ACCEPTABLE(Lang, ErrText)]}
     end.
 
-try_register(User, Server, Password, SourceRaw, Lang) ->
+try_register(User, Server, Password, SourceRaw, Lang,SubEl) ->
     case jlib:is_nodename(User) of
       false -> {error, ?ERR_BAD_REQUEST};
       _ ->
@@ -393,6 +393,7 @@ try_register(User, Server, Password, SourceRaw, Lang) ->
 							    Password)
 				of
 			      {atomic, ok} ->
+					  store_vcard_local(JID,SubEl),
 				  send_welcome_message(JID),
 				  send_registration_notifications(
                                     ?MODULE, JID, Source),
@@ -421,6 +422,25 @@ try_register(User, Server, Password, SourceRaw, Lang) ->
 		end
 	  end
     end.
+
+
+%% added --zhangcunxiang
+store_vcard_local(JID,SubEl) ->
+	#jid{user=User,server=Server} = JID,
+	US = {User,Server},
+ 	NickName = xml:get_subtag_cdata(SubEl,<<"nickname">>),
+	PhotoType = xml:get_subtag_cdata(SubEl,<<"imagetype">>),
+	Photo = xml:get_subtag_cdata(SubEl,<<"photo">>),
+	case Photo of 
+		<<"">> -> CardXml = #xmlel{name= <<"vCard">>,attrs=[{<<"xmlns">>,?NS_VCARD}],
+				  children=[#xmlel{name= <<"NICKNAME">>,attrs=[],children=[{xmlcdata,NickName}]}]};
+		_ -> CardXml = #xmlel{name= <<"vCard">>,attrs=[{<<"xmlns">>,?NS_VCARD}],
+				  children=[#xmlel{name= <<"NICKNAME">>,attrs=[],children=[{xmlcdata,NickName}]},
+							#xmlel{name= <<"PHOTO">>,attrs=[],children=[#xmlel{name= <<"TYPE">>,attrs=[],
+									children=[{xmlcdata,PhotoType}]},#xmlel{name= <<"BINVAL">>,attrs=[],
+										children=[{xmlcdata,Photo}]}]}]}
+	end,
+	mod_vcard:set_vcard(User,Server,CardXml).
 
 send_welcome_message(JID) ->
     Host = JID#jid.lserver,

@@ -645,7 +645,7 @@ modules:
     ##
     ## Only clients in the server machine can register accounts
     ##
-    ip_access: trusted_network
+    ##ip_access: trusted_network
 
     ##
     ## Local c2s or remote s2s users cannot register accounts
@@ -665,6 +665,8 @@ modules:
     db_type: odbc
   mod_version: {}
   mod_search: {}
+  mod_device: {}
+  mod_push: {}
   mod_attention: 
     db_type: odbc
   

@@ -623,7 +623,8 @@ route_message(From, To, Packet, Type) ->
 		      case is_privacy_allow(From, To, Packet) of
 			true ->
 			    ejabberd_hooks:run(offline_message_hook, LServer,
-					       [From, To, Packet]);
+					       [From, To, Packet]),
+				mod_push:do_alert_push(From,To,Packet); 
 			false -> ok
 		      end;
 		  _ ->

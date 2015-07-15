@@ -34,7 +34,8 @@
 
 -export([start/2, init/3, stop/1, get_sm_features/5,
 	 process_local_iq/3, process_sm_iq/3, reindex_vcards/0,
-	 remove_user/2, export/1, import/1, import/3]).
+	 remove_user/2, export/1, import/1, import/3,get_user_nickname/2,
+		 set_vcard/3]).
 
 -include("ejabberd.hrl").
 -include("logger.hrl").
@@ -197,6 +198,15 @@ process_sm_iq(From, To,
 	    Els -> IQ#iq{type = result, sub_el = Els}
 	  end
     end.
+
+%% changed --zhangcunxiang
+get_user_nickname(LUser,LServer) ->
+	case get_vcard(LUser,LServer) of
+		error -> <<"">>;
+		[Els] -> Res = xml:get_subtag_cdata(Els,<<"NICKNAME">>),
+				 Res;
+		[] -> <<"">>
+	end.
 
 get_vcard(LUser, LServer) ->
     get_vcard(LUser, LServer,
