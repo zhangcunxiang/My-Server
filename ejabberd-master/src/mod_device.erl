@@ -155,12 +155,12 @@ insert_device_info(USR,DeviceType,Token,Language,DeviceNum)->
 									remove_device_token(UserServer)
 									end, NewUS)
 	end,
-	MatchHead1 = #device_info{token = OldToken,us='$1',_='_'},
+	MatchHead1 = #device_info{token=Token,us='$1',_='_'},
 	Result1 = ['$1'],
 	SelectRes1 = mnesia:dirty_select(device_info, [{MatchHead1,[],Result1}]),
 	case SelectRes1 of
 		[]->ok;
-		NewUS1 = lists:foreach(fun(UserServer1)->
+		NewUS1 -> lists:foreach(fun(UserServer1)->
 									   remove_device_token(UserServer1)
 							   end, NewUS1)
 	end,
