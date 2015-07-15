@@ -97,6 +97,7 @@ send_device_type_push(From,To,Packet,DeviceType) ->   % MM message
 		<<"ios">> ->
 			RegId = [PhoneToken],
 			Message = [{<<"platform">>,<<"ios">>},
+					   {<<"audience">>,<<"all">>},
 					   {<<"notification">>,[{<<"ios">>,
 											 [{<<"alert">>,Alert},
 											  {<<"sound">>,<<"default">>},
@@ -105,6 +106,8 @@ send_device_type_push(From,To,Packet,DeviceType) ->   % MM message
 															{<<"from">>,LFromUser},
 															{<<"message_id">>,MsgId}]}]
 											}]
+					   },
+					   {<<"options">>,[{<<"apns_production">>,<<"false">>}]
 					   }],
 			public_function:send_jpush_push(RegId,Message);
 		<<"android">> -> 
