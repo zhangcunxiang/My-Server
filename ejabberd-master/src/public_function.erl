@@ -56,6 +56,6 @@ send_jpush_push(RegId,Message) ->
 	end.
 
 send_jpush_test() ->
-	RegId = [<<"0a01202f2d0">>],
-	Message = [{<<"platform">>,<<"android">>},{<<"notification">>,[{<<"android">>,[{<<"alert">>,<<"你好，这是张存祥">>},{<<"extras">>,[{<<"my_key">>,<<"a value">>}]}]}]}],
+	RegId = [<<"041f9ca8bb8">>],
+	Message = [{<<"platform">>,<<"ios">>},{<<"notification">>,[{<<"ios">>,[{<<"alert">>,<<"你好，这是张存祥">>},{<<"extras">>,[{<<"my_key">>,<<"a value">>}]}]}]}],
 	send_jpush_push(RegId,Message).
