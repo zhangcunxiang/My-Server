@@ -97,7 +97,7 @@ send_device_type_push(From,To,Packet,DeviceType) ->   % MM message
 		<<"ios">> ->
 			RegId = [PhoneToken],
 			Message = [{<<"platform">>,<<"ios">>},
-					   {<<"notification">>,[{<<"android">>,
+					   {<<"notification">>,[{<<"ios">>,
 											 [{<<"alert">>,Alert},
 											  {<<"sound">>,<<"default">>},
 											  {<<"badge">>,<<"+1">>},
