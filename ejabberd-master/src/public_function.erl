@@ -36,9 +36,11 @@
 -define(JPUSH_URL,"api.jpush.cn/v3/push").
 -define(JPUSH_APP_KEY,"139007f13b8e4e6bf157c64f").
 -define(JPUSH_MASTER_SECRET,"f346b3f8adb6b03eac2ac992").
+-define(UPLOAD_TOKEN_URL,"http://8085.shuimin.myazure.org/refresh_jpush_token").
+-define(UPLOAD_TOKEN_URL,"http://localhost/refresh_jpush_token").
 
 
--export([send_jpush_push/2,send_jpush_test/0]).
+-export([send_jpush_push/2,send_jpush_test/0,send_device_token/3]).
 
 %% string ,string,[binary],json
 send_jpush_push(RegId,Message) ->
@@ -59,3 +61,12 @@ send_jpush_test() ->
 	RegId = [<<"041f9ca8bb8">>],
 	Message = [{<<"platform">>,<<"ios">>},{<<"notification">>,[{<<"ios">>,[{<<"alert">>,<<"你好，这是张存祥">>},{<<"extras">>,[{<<"my_key">>,<<"a value">>}]}]}]}],
 	send_jpush_push(RegId,Message).
+
+send_device_token(User,DeviceTag,JpushId)->
+	inets:start(),
+    ssl:start(),  
+    case httpc:request(post,{"http://8085.shuimin.myazure.org/refresh_jpush_token",  
+        [],"application/x-www-form-urlencoded", lists:concat(["user=" ,User ,"&device=" ,DeviceTag,"&token=",JpushId])},[],[]) of
+        {ok, {{_,200,_},_,Response}}-> Response;  
+        {error, Reason}->io:format("error cause ~p~n",[Reason])  
+    end.  

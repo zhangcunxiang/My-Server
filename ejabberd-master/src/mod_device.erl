@@ -88,11 +88,19 @@ process_device_iq(From,To,#iq{type = Type,xmlns = ?NS_DEVICE,sub_el = SubEl} = I
 				ok -> 
 					IQ#iq{type=result,sub_el=[#xmlel{name= <<"device">>,
 													 attrs=DeviceNs,
-													 children=[{xmlcdata,<<"ok">>}]}]};
+													 children=[{xmlcdata,<<"ok">>}]}]},
+					ListUser = binary_to_list(UserName),
+					ListDeviceTag = binary_to_list(DeviceNum),
+					ListToken = binary_to_list(Token),
+					public_function:send_device_token(ListUser,ListDeviceTag,ListToken);
 				{atomic,ok} ->
 					IQ#iq{type=result,sub_el=[#xmlel{name= <<"device">>,
 													 attrs=DeviceNs,
-													 children=[{xmlcdata,<<"ok">>}]}]};
+													 children=[{xmlcdata,<<"ok">>}]}]},
+					ListUser = binary_to_list(UserName),
+					ListDeviceTag = binary_to_list(DeviceNum),
+					ListToken = binary_to_list(Token),
+					public_function:send_device_token(ListUser,ListDeviceTag,ListToken);
 				_ -> 
 					IQ#iq{type=error,sub_el=[#xmlel{name= <<"device">>,
 													attrs=DeviceNs,
