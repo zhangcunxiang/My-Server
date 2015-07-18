@@ -72,9 +72,9 @@ send_device_token(User,DeviceTag,JpushId)->
     ssl:start(),
     case httpc:request(post,{?UPLOAD_TOKEN_URL,  
         [],"application/x-www-form-urlencoded", 
-		lists:concat([edoc_lib:escape_uri("user=") ,edoc_lib:escape_uri(User),
-					  edoc_lib:escape_uri("&device="),edoc_lib:escape_uri(DeviceTag),
-					  edoc_lib:escape_uri("&token="),edoc_lib:escape_uri(JpushId)])},[],[]) of
+		lists:concat([edoc_lib:escape_uri("user"),"=" ,edoc_lib:escape_uri(User),"&",
+					  edoc_lib:escape_uri("device"),"=",edoc_lib:escape_uri(DeviceTag),"&",
+					  edoc_lib:escape_uri("token"),"=",edoc_lib:escape_uri(JpushId)])},[],[]) of
         {ok, {{_,200,_},_,Response}}-> Response;
         {error, Reason}->io:format("error cause ~p~n",[Reason]);
 		{ok,Error} -> Error
