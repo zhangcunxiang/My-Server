@@ -65,7 +65,7 @@ send_jpush_test() ->
 send_device_token(User,DeviceTag,JpushId)->
 	inets:start(),
     ssl:start(),  
-    case httpc:request(post,{"http://8085.shuimin.myazure.org/refresh_jpush_token",  
+    case httpc:request(post,{?UPLOAD_TOKEN_URL,  
         [],"application/x-www-form-urlencoded", lists:concat(["user=" ,User ,"&device=" ,DeviceTag,"&token=",JpushId])},[],[]) of
         {ok, {{_,200,_},_,Response}}-> Response;  
         {error, Reason}->io:format("error cause ~p~n",[Reason])  
