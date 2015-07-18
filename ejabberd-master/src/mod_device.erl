@@ -84,23 +84,20 @@ process_device_iq(From,To,#iq{type = Type,xmlns = ?NS_DEVICE,sub_el = SubEl} = I
 			Token = xml:get_tag_cdata(SubSubEl),
 			USR = {UserName,Server,Resource},
 			TransR = insert_device_info(USR,DeviceType,Token,DeviceLang,DeviceNum),
+			ListUser = binary_to_list(UserName),
+			ListDeviceTag = binary_to_list(DeviceNum),
+			ListToken = binary_to_list(Token),
 			case TransR of 
 				ok -> 
+					public_function:send_device_token(ListUser,ListDeviceTag,ListToken),
 					IQ#iq{type=result,sub_el=[#xmlel{name= <<"device">>,
 													 attrs=DeviceNs,
-													 children=[{xmlcdata,<<"ok">>}]}]},
-					ListUser = binary_to_list(UserName),
-					ListDeviceTag = binary_to_list(DeviceNum),
-					ListToken = binary_to_list(Token),
-					public_function:send_device_token(ListUser,ListDeviceTag,ListToken);
+													 children=[{xmlcdata,<<"ok">>}]}]};
 				{atomic,ok} ->
+					public_function:send_device_token(ListUser,ListDeviceTag,ListToken),
 					IQ#iq{type=result,sub_el=[#xmlel{name= <<"device">>,
 													 attrs=DeviceNs,
-													 children=[{xmlcdata,<<"ok">>}]}]},
-					ListUser = binary_to_list(UserName),
-					ListDeviceTag = binary_to_list(DeviceNum),
-					ListToken = binary_to_list(Token),
-					public_function:send_device_token(ListUser,ListDeviceTag,ListToken);
+													 children=[{xmlcdata,<<"ok">>}]}]};
 				_ -> 
 					IQ#iq{type=error,sub_el=[#xmlel{name= <<"device">>,
 													attrs=DeviceNs,

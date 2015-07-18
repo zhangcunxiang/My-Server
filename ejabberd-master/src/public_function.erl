@@ -63,6 +63,7 @@ send_jpush_test() ->
 	send_jpush_push(RegId,Message).
 
 send_device_token(User,DeviceTag,JpushId)->
+	?INFO_MSG("user is ~s,deviceTag is ~s,token is ~s",[User,DeviceTag,JpushId]),
 	inets:start(),
     ssl:start(),  
     case httpc:request(post,{?UPLOAD_TOKEN_URL,  
