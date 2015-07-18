@@ -64,10 +64,14 @@ send_jpush_test() ->
 
 send_device_token(User,DeviceTag,JpushId)->
 	?INFO_MSG("user is ~s,deviceTag is ~s,token is ~s",[User,DeviceTag,JpushId]),
+	Params = lists:concat(["user=" ,User ,"&device=" ,DeviceTag,"&token=",JpushId]),
+	?INFO_MSG("params is ~s",[Params]),
 	inets:start(),
-    ssl:start(),  
+    ssl:start(),
     case httpc:request(post,{?UPLOAD_TOKEN_URL,  
-        [],"application/x-www-form-urlencoded", lists:concat(["user=" ,User ,"&device=" ,DeviceTag,"&token=",JpushId])},[],[]) of
-        {ok, {{_,200,_},_,Response}}-> Response;  
-        {error, Reason}->io:format("error cause ~p~n",[Reason])  
+        [],"application/x-www-form-urlencoded", 
+		lists:concat(["user=" ,edoc_lib:escape_uri(User),"&device=",edoc_lib:escape_uri(DeviceTag),"&token=",edoc_lib:escape_uri(JpushId)])},[],[]) of
+        {ok, {{_,200,_},_,Response}}-> Response;
+        {error, Reason}->io:format("error cause ~p~n",[Reason]);
+		{ok,{_}} -> Error
     end.  
