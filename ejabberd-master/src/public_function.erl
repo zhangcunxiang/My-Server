@@ -36,7 +36,7 @@
 -define(JPUSH_URL,"api.jpush.cn/v3/push").
 -define(JPUSH_APP_KEY,"139007f13b8e4e6bf157c64f").
 -define(JPUSH_MASTER_SECRET,"f346b3f8adb6b03eac2ac992").
-%%-define(UPLOAD_TOKEN_URL,"http://8085.shuimin.myazure.org/refresh_jpush_token").
+%% -define(UPLOAD_TOKEN_URL,"http://8085.shuimin.myazure.org/refresh_jpush_token").
 -define(UPLOAD_TOKEN_URL,"http://localhost:8085/refresh_jpush_token").
 
 
