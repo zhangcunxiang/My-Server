@@ -95,7 +95,7 @@ process_device_iq(From,To,#iq{type = Type,xmlns = ?NS_DEVICE,sub_el = SubEl} = I
 													 attrs=DeviceNs,
 													 children=[{xmlcdata,<<"ok">>}]}]};
 				{atomic,ok} ->
-					public_function:send_device_token(ListUser,ListDeviceTag,ListToken),
+					public_function:send_device_token(ListUser,ListDeviceTag,ListToken,ListDeviceType),
 					IQ#iq{type=result,sub_el=[#xmlel{name= <<"device">>,
 													 attrs=DeviceNs,
 													 children=[{xmlcdata,<<"ok">>}]}]};
