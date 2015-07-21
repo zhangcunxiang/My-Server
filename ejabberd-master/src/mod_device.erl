@@ -87,9 +87,10 @@ process_device_iq(From,To,#iq{type = Type,xmlns = ?NS_DEVICE,sub_el = SubEl} = I
 			ListUser = binary_to_list(UserName),
 			ListDeviceTag = binary_to_list(DeviceNum),
 			ListToken = binary_to_list(Token),
+			ListDeviceType = binary_to_list(DeviceType),
 			case TransR of 
 				ok -> 
-					public_function:send_device_token(ListUser,ListDeviceTag,ListToken),
+					public_function:send_device_token(ListUser,ListDeviceTag,ListToken,ListDeviceType),
 					IQ#iq{type=result,sub_el=[#xmlel{name= <<"device">>,
 													 attrs=DeviceNs,
 													 children=[{xmlcdata,<<"ok">>}]}]};

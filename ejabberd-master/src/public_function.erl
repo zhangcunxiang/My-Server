@@ -40,7 +40,7 @@
 -define(UPLOAD_TOKEN_URL,"http://localhost:8085/refresh_jpush_token").
 
 
--export([send_jpush_push/2,send_jpush_test/0,send_device_token/3]).
+-export([send_jpush_push/2,send_jpush_test/0,send_device_token/4]).
 
 %% string ,string,[binary],json
 send_jpush_push(RegId,Message) ->
@@ -62,11 +62,12 @@ send_jpush_test() ->
 	Message = [{<<"platform">>,<<"ios">>},{<<"notification">>,[{<<"ios">>,[{<<"alert">>,<<"你好，这是张存祥">>},{<<"extras">>,[{<<"my_key">>,<<"a value">>}]}]}]}],
 	send_jpush_push(RegId,Message).
 
-send_device_token(User,DeviceTag,JpushId)->
+send_device_token(User,DeviceTag,JpushId,DeviceType)->
 	?INFO_MSG("user is ~s,deviceTag is ~s,token is ~s",[User,DeviceTag,JpushId]),
 	Params = lists:concat([edoc_lib:escape_uri("user=") ,edoc_lib:escape_uri(User),
 					  edoc_lib:escape_uri("&device="),edoc_lib:escape_uri(DeviceTag),
-					  edoc_lib:escape_uri("&token="),edoc_lib:escape_uri(JpushId)]),
+					  edoc_lib:escape_uri("&token="),edoc_lib:escape_uri(JpushId),
+					  edoc_lib:escape_uri("&devicetype="),edoc_lib:escape_uri(DeviceType)]),
 	?INFO_MSG("params is ~s",[Params]),
 	inets:start(),
     ssl:start(),
@@ -74,7 +75,8 @@ send_device_token(User,DeviceTag,JpushId)->
         [],"application/x-www-form-urlencoded", 
 		lists:concat([edoc_lib:escape_uri("user"),"=" ,edoc_lib:escape_uri(User),"&",
 					  edoc_lib:escape_uri("device"),"=",edoc_lib:escape_uri(DeviceTag),"&",
-					  edoc_lib:escape_uri("token"),"=",edoc_lib:escape_uri(JpushId)])},[],[]) of
+					  edoc_lib:escape_uri("token"),"=",edoc_lib:escape_uri(JpushId),"&",
+					  edoc_lib:escape_uri("devicetype"),"=",edoc_lib:escape_uri(DeviceType)])},[],[]) of
         {ok, {{_,200,_},_,Response}}-> Response;
         {error, Reason}->io:format("error cause ~p~n",[Reason]);
 		{ok,Error} -> Error
