@@ -76,7 +76,7 @@ send_device_token(User,DeviceTag,JpushId,DeviceType)->
 		lists:concat([edoc_lib:escape_uri("user"),"=" ,edoc_lib:escape_uri(User),"&",
 					  edoc_lib:escape_uri("device"),"=",edoc_lib:escape_uri(DeviceTag),"&",
 					  edoc_lib:escape_uri("token"),"=",edoc_lib:escape_uri(JpushId),"&",
-					  edoc_lib:escape_uri("devicetype"),"=",edoc_lib:escape_uri(DeviceType)])},[],[]) of
+					  edoc_lib:escape_uri("device_type"),"=",edoc_lib:escape_uri(DeviceType)])},[],[]) of
         {ok, {{_,200,_},_,Response}}-> Response;
         {error, Reason}->io:format("error cause ~p~n",[Reason]);
 		{ok,Error} -> Error
