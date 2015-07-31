@@ -27,6 +27,7 @@
 -define(NS_AUTH, <<"jabber:iq:auth">>).
 -define(NS_AUTH_ERROR, <<"jabber:iq:auth:error">>).
 -define(NS_REGISTER, <<"jabber:iq:register">>).
+-define(NS_CHANGE_PASS,<<"jabber:iq:change:pass">>).
 -define(NS_SEARCH, <<"jabber:iq:search">>).
 -define(NS_ATTENTION,<<"jabber:iq:attention">>).
 -define(NS_RECEIPTS,<<"urn:xmpp:receipts">>).

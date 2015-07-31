@@ -94,6 +94,35 @@ unauthenticated_iq_register(_Acc, Server,
 				jlib:make_jid(<<"">>, <<"">>, <<"">>),
 				jlib:iq_to_xml(ResIQ)),
     jlib:remove_attr(<<"to">>, Res1);
+unauthenticated_iq_register(_Acc,Server,
+				#iq{xmlns=?NS_CHANGE_PASS,sub_el = SubEl} = IQ,_IP) ->
+	User = xml:get_subtag_cdata(SubEl,<<"account">>),
+	Pass = xml:get_subtag_cdata(SubEl,<<"newpass">>),
+	case ejabberd_auth:is_user_exists(User,Server) of
+		true ->
+			TransR = ejabberd_auth_internal:set_password(User,Server,Pass),
+			ResIQ = case TransR of
+				ok ->
+					IQ#iq{type=result,
+							sub_el=[#xmlel{name = <<"query">>,attrs =
+									[{<<"xmlns">>,?NS_CHANGE_PASS}],children=
+											   [#xmlel{name= <<"result">>,attrs=[],children=[{xmlcdata,<<"ok">>}]}]}]};
+				{error,_} -> 
+					IQ#iq{type=result,
+							sub_el=[#xmlel{name = <<"query">>,
+										   attrs =[{<<"xmlns">>,?NS_CHANGE_PASS}],
+										   children=[?ERR_INTERNAL_SERVER_ERROR]}]}
+			end;
+		_ -> ResIQ = IQ#iq{type=result,
+							sub_el=[#xmlel{name = <<"query">>,
+										   attrs =[{<<"xmlns">>,?NS_CHANGE_PASS}],
+										   children=[?ERR_NO_USER]}]}
+	end,	
+	Res1 = jlib:replace_from_to(jlib:make_jid(<<"">>,
+					      Server, <<"">>),
+				jlib:make_jid(<<"">>, <<"">>, <<"">>),
+				jlib:iq_to_xml(ResIQ)),
+	jlib:remove_attr(<<"to">>, Res1);
 unauthenticated_iq_register(Acc, _Server, _IQ, _IP) ->
     Acc.
 

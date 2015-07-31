@@ -82,6 +82,10 @@
 	?STANZA_ERROR(<<"402">>, <<"auth">>,
 		      <<"payment-required">>)).
 
+-define(ERR_NO_USER,
+	?STANZA_ERROR(<<"408">>,<<"cancel">>,
+			 <<"no-user">>)).
+
 -define(ERR_RECIPIENT_UNAVAILABLE,
 	?STANZA_ERROR(<<"404">>, <<"wait">>,
 		      <<"recipient-unavailable">>)).
