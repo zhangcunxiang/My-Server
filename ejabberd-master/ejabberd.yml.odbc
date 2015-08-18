@@ -669,6 +669,9 @@ modules:
   mod_push: {}
   mod_attention: 
     db_type: odbc
+  mod_group: {}
+  mod_group_vcard: {}
+  mod_group_message: {}
   
 
 ##

@@ -229,6 +229,30 @@
 	?STANZA_ERRORT(<<"400">>, <<"wait">>,
 		       <<"unexpected-request">>, Lang, Text)).
 
+-define(ERR_MAX_GROUP,
+		?STANZA_ERROR(<<"1201">>,<<"cancel">>,
+					  <<"max-group-num-already">>)).
+
+-define(ERR_NO_GROUP,
+		?STANZA_ERROR(<<"1202">>,<<"cancel">>,
+					  <<"no-this-group-error">>)).
+
+-define(ERR_RQUIRE_ALLOW_TYPE,
+		?STANZA_ERROR(<<"1203">>,<<"cancel">>,
+					  <<"allow-type-required">>)).
+
+-define(ERR_NO_RIGHT,
+		?STANZA_ERROR(<<"1204">>,<<"cancel">>,
+					  <<"no-right-action">>)).
+
+-define(ERR_FAILED_OPERATION,
+		?STANZA_ERROR(<<"1205">>,<<"cancel">>,
+					  <<"failed-operation">>)).
+
+-define(ERROR_ALLREADY_BE,
+		?STANZA_ERROR(<<"1207">>,<<"cancel">>,
+					  <<"already-be-operation">>)).
+
 -define(ERR_AUTH_NO_RESOURCE_PROVIDED(Lang),
 	?ERRT_NOT_ACCEPTABLE(Lang, <<"No resource provided">>)).
 

@@ -2137,6 +2137,7 @@ presence_update(From, Packet, StateData) ->
 					       [NewStateData#state.jid]),
 			    ResentStateData = if NewPriority >= 0 ->
 						     resend_offline_messages(NewStateData),
+							 resend_offline_group_message(NewStateData),
 						     resend_subscription_requests(NewStateData);
 						 true -> NewStateData
 					      end,
@@ -2426,6 +2427,20 @@ resend_offline_messages(StateData) ->
 			end,
 			Rs)
     end.
+
+resend_offline_group_message(StateData) ->
+	?INFO_MSG("before to resend_group_message ",[]),
+	Rs = ejabberd_hooks:run_fold(resend_group_messages_hook,
+			      StateData#state.server, [],
+			      [StateData#state.user, StateData#state.server]),
+	case Rs of
+		ok -> ok;
+		_ -> 
+			ToJID = StateData#state.jid,
+			lists:foreach(fun({route,From,_To,#xmlel{} = Packet}) ->
+								   ejabberd_router:route(From,ToJID,Packet)
+								   end, Rs)
+	end.
 
 resend_subscription_requests(#state{user = User,
 				    server = Server} = StateData) ->

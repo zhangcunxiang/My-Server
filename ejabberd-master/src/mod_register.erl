@@ -100,7 +100,7 @@ unauthenticated_iq_register(_Acc,Server,
 	Pass = xml:get_subtag_cdata(SubEl,<<"newpass">>),
 	case ejabberd_auth:is_user_exists(User,Server) of
 		true ->
-			TransR = ejabberd_auth_internal:set_password(User,Server,Pass),
+			TransR = ejabberd_auth:set_password(User,Server,Pass),
 			ResIQ = case TransR of
 				ok ->
 					IQ#iq{type=result,
