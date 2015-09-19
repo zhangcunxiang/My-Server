@@ -1,3 +1,6 @@
+%% coding: utf-8
+%% For this file we have chosen encoding = utf-8
+%% -*- coding: utf-8 -*-
 %%%----------------------------------------------------------------------
 %%% File    : mod_register.erl
 %%% Author  : Alexey Shchepin <alexey@process-one.net>
@@ -40,6 +43,7 @@
 -include("logger.hrl").
 
 -include("jlib.hrl").
+-include("mod_roster.hrl").
 
 start(Host, Opts) ->
     IQDisc = gen_mod:get_opt(iqdisc, Opts, fun gen_iq_handler:check_type/1,
@@ -473,6 +477,8 @@ store_vcard_local(JID,SubEl) ->
 
 send_welcome_message(JID) ->
     Host = JID#jid.lserver,
+	JID2 = jlib:make_jid({<<"张存祥">>,Host,<<"CARCAR">>}),
+	set_relationship(JID, JID2),
     case gen_mod:get_module_opt(Host, ?MODULE, welcome_message,
                                 fun(Opts) ->
                                         S = proplists:get_value(
@@ -501,6 +507,34 @@ send_welcome_message(JID) ->
 						       [{xmlcdata, Body}]}]});
       _ -> ok
     end.
+
+
+set_relationship(JID1,JID2) ->
+	Server = JID1#jid.server,
+	UserName1 = JID1#jid.user,
+	UserName2 = JID2#jid.user,
+	SJID1 = jlib:jid_to_string(JID1),
+	SJID2 = jlib:jid_to_string(JID2),
+	ItemVals = #roster{us = {JID1#jid.luser,JID1#jid.lserver},
+					   jid = SJID2,
+					   subscription = <<"both">>,
+					   ask = <<"none">>,
+					   askmessage = <<"">>
+					   },
+	ItemString1 = mod_roster:record_to_string(ItemVals),
+	odbc_queries:roster_subscribe(Server, JID1#jid.luser, SJID2,
+				  ItemString1),
+	ItemVals2 = #roster{us = {JID2#jid.luser,JID2#jid.lserver},
+					   jid = SJID1,
+					   subscription = <<"both">>,
+					   ask = <<"none">>,
+					   askmessage = <<"">>
+					   },
+	ItemString1 = mod_roster:record_to_string(ItemVals2),
+	odbc_queries:roster_subscribe(Server, JID2#jid.luser, SJID1,
+				  ItemVals2),
+	ok.
+
 
 send_registration_notifications(Mod, UJID, Source) ->
     Host = UJID#jid.lserver,
