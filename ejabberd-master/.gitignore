@@ -13,7 +13,6 @@
 /aclocal.m4
 /contrib/extract_translations/extract_translations.beam
 /*.cache
-/deps/
 /doc/*.aux
 /doc/*.haux
 /doc/*.html
